@@ -22,17 +22,13 @@ ui <- fluidPage(
       tags$hr(),
       
       # Label selector
-      uiOutput("labels"),
-      
+      uiOutput("choose_label"),
+      uiOutput("models"),
       # Input: Checkbox if file has header ----
       checkboxInput("header", "Header", TRUE),
       
       # Input: Select separator ----
-      #radioButtons("sep", "Separator",
-      #             choices = c(Comma = ",",
-      #                         Semicolon = ";",
-      #                         Tab = "\t"),
-      #             selected = ","),
+      #radioButtons("model", "Model", choices = "XGBoost", selected = "XGBoost"),
       
       # Input: Select quotes ----
       #radioButtons("quote", "Quote",
@@ -55,8 +51,10 @@ ui <- fluidPage(
     # Main panel for displaying outputs ----
     mainPanel(
       
+      textOutput("contents"),
+      tableOutput("contents1")
       # Output: Data file ----
-      tableOutput("contents")
+     #tableOutput("contents")
       
     )
     
