@@ -1,7 +1,6 @@
 
 # Define UI for data upload app ----
 ui <- fluidPage(
-  
   # App title ----
   titlePanel("ShinyML"),
   
@@ -25,33 +24,15 @@ ui <- fluidPage(
       uiOutput("choose_label"),
       uiOutput("models"),
       # Input: Checkbox if file has header ----
-      checkboxInput("header", "Header", TRUE),
-      
-      # Input: Select separator ----
-      #radioButtons("model", "Model", choices = "XGBoost", selected = "XGBoost"),
-      
-      # Input: Select quotes ----
-      #radioButtons("quote", "Quote",
-      #             choices = c(None = "",
-      ##                         "Double Quote" = '"',
-      #                         "Single Quote" = "'"),
-      #             selected = '"'),
-      
+      #checkboxInput("header", "Header", TRUE),
+     
       # Horizontal line ----
       tags$hr(),
       actionButton("do_train", "Train"),
       tags$hr(),
-      downloadButton("downloadModel", "Download Model")
-      
-      #actionButton("do_test", "Click Me")
-      
-      # Input: Select number of rows to display ----
-      #radioButtons("disp", "Display",
-      #             choices = c(Head = "head",
-      #                         All = "all"),
-      #             selected = "head")
-      
-    ),
+      downloadButton("downloadModel", "Download Model"),
+      helpText("Download will be available once training is completed.")
+     ),
     
     # Main panel for displaying outputs ----
     mainPanel(
@@ -59,9 +40,7 @@ ui <- fluidPage(
       textOutput("text"),
       tableOutput("table"),
       plotOutput("plot")
-      # Output: Data file ----
-     #tableOutput("contents")
-      
+     
     )
     
   )
