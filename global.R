@@ -8,3 +8,4 @@ library(dplyr)
 global_label <- ""
 file1 <- ""
 cMatrix <- ""
+globalModel <- ""

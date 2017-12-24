@@ -18,11 +18,9 @@ server <- function(input, output) {
     selectInput("model", "Select Model:", choices = "XGBoost")
   })
   
-  output$contents <- renderPrint({
+  model <- eventReactive(input$do_train, {
     req(input$file1) 
     req(input$label)
-    #file1 <- read.csv(input$file1$datapath, header = input$header, sep = ",", quote = '"')    
-    #return(head(file1))
     data <- file1[complete.cases(file1),]
     data_label <- as.numeric(data[,input$label])  
     sample_size <- floor(0.75 * nrow(data))
@@ -44,26 +42,56 @@ server <- function(input, output) {
     watchlist <- list(train=dtrain, test=dtest)
     
     xgbModel <- xgb.train(data = dtrain, max.depth = 10, eta = 0.2, nthread = 2, num_class = 7, nround = 8, watchlist=watchlist, objective = "multi:softmax")
+    globalModel <<- xgbModel
     test_pred <- predict(xgbModel, newdata = test)
     cMatrix <<- confusionMatrix(test_pred, test_label)
+    acc <- cMatrix$overall[1]
+    kap <- cMatrix$overall[2]
+    tab <- as.matrix(cMatrix$table)
     
-    return(cMatrix$overall)
+    eval_log <- xgbModel$evaluation_log
+    x  <- eval_log$iter
+    y1 <- eval_log$train_merror
+    y2 <- eval_log$test_merror
+    df <- data.frame(x,y1,y2)
+    require(ggplot2)
+    
+    ggplot(df, aes(x)) +                    # basic graphical object
+      geom_line(aes(y=y1), colour="red") +  # first layer
+      geom_line(aes(y=y2), colour="green")  # second layer
+    g <- ggplot(df, aes(x))
+    g <- g + geom_line(aes(y=y1), colour="red")
+    g <- g + geom_line(aes(y=y2), colour="green")
+    g <- g + ylab("Y") + xlab("X")
+    
+    list(acc = acc, kap = kap, tab = tab, plot = g)
   })
   
-  newEntry <- observe({ # use observe pattern
-    
-    req(input$file1)
-    #file1 <- read.csv(input$file1$datapath, header = input$header, sep = ",", quote = '"')        
-    #isolate(values$df <- input$label)
-    data <- file1[complete.cases(file1),]
-    data_label <- as.numeric(data[,input$label])  
-    
+  output$text <- renderText({
+    out <- paste0("Accuracy: ", model()$acc,"\n","Kappa: ", model()$kap)
+    print(out)
+    out
   })
-  output$out <- renderText(paste0("Label: ",input$label))
+
+  output$table <- renderTable({
+    model()$tab
+  })
   
-  output$contents1 <- renderTable({
-    req(input$file1)
-    req(input$label)
-    return(cMatrix$table)
+  output$plot <- renderPlot({
+    model()$plot
   })
+  
+  output$downloadModel <- downloadHandler(
+  #  if (globalModel == "") {
+  #    
+  #  }
+    filename = function() {
+      paste(input$file1, ".model", sep = "")
+    },
+    content = function(file) {
+      #write.csv(datasetInput(), file, row.names = FALSE)
+      xgb.save(globalModel, file)
+    }
+  )
+  
 }

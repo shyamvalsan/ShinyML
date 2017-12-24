@@ -38,7 +38,12 @@ ui <- fluidPage(
       #             selected = '"'),
       
       # Horizontal line ----
-      tags$hr()
+      tags$hr(),
+      actionButton("do_train", "Train"),
+      tags$hr(),
+      downloadButton("downloadModel", "Download Model")
+      
+      #actionButton("do_test", "Click Me")
       
       # Input: Select number of rows to display ----
       #radioButtons("disp", "Display",
@@ -51,8 +56,9 @@ ui <- fluidPage(
     # Main panel for displaying outputs ----
     mainPanel(
       
-      textOutput("contents"),
-      tableOutput("contents1")
+      textOutput("text"),
+      tableOutput("table"),
+      plotOutput("plot")
       # Output: Data file ----
      #tableOutput("contents")
       
