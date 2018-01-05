@@ -66,13 +66,19 @@ server <- function(input, output) {
     list(acc = acc, kap = kap, tab = tab, plot = g)
   })
 
-  output$text <- renderText({
-    out <- paste0("Accuracy: ", model()$acc,"\n","Kappa: ", model()$kap)
-    print(out)
+  output$text_acc <- renderText({
+    out <- paste0("Accuracy = ", model()$acc)
+    writeLines(out)
+    out
+  })
+  
+  output$text_kap <- renderText({
+    out <- paste0("Kappa = ", model()$kap)
+    writeLines(out)
     out
   })
 
-  output$table <- renderTable({
+  output$table <- renderDataTable({
     model()$tab
   })
   
